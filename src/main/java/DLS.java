@@ -43,11 +43,33 @@ public class DLS {
         }
     }
 
-    private void plateuSearch() {
+    private void plateauSearch() {
         int initialCliqueSize = cliqueSize;
         while (improvingNeighboursSize == 0 && levelNeighboursSize > 0 && initialCliqueSize > 0) {
             int picked = selectMinPenalty();
             clique[cliqueSize++] = picked;
+
+            int deleted = 0;
+            int lastKey = levelNeighboursSize - 1;
+            for (int i = levelNeighboursSize - 1; i >= 0; i--) {
+                int currentVertex = levelNeighbours[i];
+                if (adjMatrix[currentVertex][deleted] && !adjMatrix[currentVertex][picked]) {
+                    int addedVertex = levelNeighbours[lastKey];
+                    levelNeighbours[i] = addedVertex;
+
+                    levelNeighboursKey[addedVertex] = i;
+                    levelNeighboursKey[currentVertex] = -1;
+
+                    lastKey--;
+                }
+                else if (!adjMatrix[currentVertex][deleted] && adjMatrix[currentVertex][picked]) {
+                    improvingNeighbours[improvingNeighboursSize] = currentVertex;
+                    improvingNeighboursKey[currentVertex] = improvingNeighboursSize;
+                    improvingNeighboursSize++;
+                }
+            }
+            initialCliqueSize--;
+            levelNeighboursSize = lastKey + 1;
         }
     }
 
