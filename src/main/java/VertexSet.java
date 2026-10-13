@@ -46,7 +46,7 @@ public class VertexSet {
     }
 
     public boolean addVertex(int vertexNum) {
-        if (isValidVertex(vertexNum) && setSize < numOfVertex) {
+        if (isValidVertex(vertexNum) && setSize < numOfVertex && neigboursKey[vertexNum] == -1) {
             neigboursSet[setSize] = vertexNum;
             setSize++;
             return true;
@@ -55,7 +55,7 @@ public class VertexSet {
     }
 
     public int removeVertex(int removedVertex) {
-        if (isValidVertex(removedVertex)) {
+        if (isValidVertex(removedVertex) && neigboursKey[removedVertex] != -1) {
             int removedVertexKey = key(removedVertex);
             int addedVertex = neigboursSet[setSize - 1];
 
@@ -67,5 +67,9 @@ public class VertexSet {
             setSize--;
         }
         return -1;
+    }
+
+    public void clear() {
+        setSize = 0;
     }
 }
