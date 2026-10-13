@@ -1,14 +1,8 @@
 import java.util.ArrayList;
 
 public class DLS {
-    private int improvingNeighboursSize;
-    private int[] improvingNeighbours;
-    private int[] improvingNeighboursKey;
-
-
-    private int levelNeighboursSize;
-    private int[] levelNeighbours;
-    private int[] levelNeighboursKey;
+    private VertexSet improvingNeighbours;
+    private VertexSet levelNeighbours;
 
     private int cliqueSize;
     private int[] clique;
@@ -22,54 +16,36 @@ public class DLS {
     }
 
     private void expand() {
-        while (improvingNeighboursSize > 0) {
+        while (improvingNeighbours.getSetSize() > 0) {
             int picked = selectMinPenalty();
             clique[cliqueSize++] = picked;
 
-            int lastKey = improvingNeighboursSize - 1;
-            for (int i = improvingNeighboursSize - 1; i >= 0; i--) {
-                int currentVertex = improvingNeighbours[i];
+            for (int i = improvingNeighbours.getSetSize() - 1; i >= 0; i--) {
+                int currentVertex = improvingNeighbours.vertex(i);
                 if (!adjMatrix[currentVertex][picked]) {
-                    int addedVertex = improvingNeighbours[lastKey];
-                    improvingNeighbours[i] = addedVertex;
-
-                    improvingNeighboursKey[addedVertex] = i;
-                    improvingNeighboursKey[currentVertex] = -1;
-
-                    lastKey--;
+                    improvingNeighbours.removeVertex(currentVertex);
                 }
             }
-            improvingNeighboursSize = lastKey + 1;
         }
     }
 
     private void plateauSearch() {
         int initialCliqueSize = cliqueSize;
-        while (improvingNeighboursSize == 0 && levelNeighboursSize > 0 && initialCliqueSize > 0) {
+        while (improvingNeighbours.getSetSize() == 0 && levelNeighbours.getSetSize() > 0 && initialCliqueSize > 0) {
             int picked = selectMinPenalty();
             clique[cliqueSize++] = picked;
 
             int deleted = 0;
-            int lastKey = levelNeighboursSize - 1;
-            for (int i = levelNeighboursSize - 1; i >= 0; i--) {
-                int currentVertex = levelNeighbours[i];
+            for (int i = levelNeighbours.getSetSize() - 1; i >= 0; i--) {
+                int currentVertex = levelNeighbours.vertex(i);
                 if (adjMatrix[currentVertex][deleted] && !adjMatrix[currentVertex][picked]) {
-                    int addedVertex = levelNeighbours[lastKey];
-                    levelNeighbours[i] = addedVertex;
-
-                    levelNeighboursKey[addedVertex] = i;
-                    levelNeighboursKey[currentVertex] = -1;
-
-                    lastKey--;
+                    levelNeighbours.removeVertex(currentVertex);
                 }
                 else if (!adjMatrix[currentVertex][deleted] && adjMatrix[currentVertex][picked]) {
-                    improvingNeighbours[improvingNeighboursSize] = currentVertex;
-                    improvingNeighboursKey[currentVertex] = improvingNeighboursSize;
-                    improvingNeighboursSize++;
+                    improvingNeighbours.addVertex(currentVertex);
                 }
             }
             initialCliqueSize--;
-            levelNeighboursSize = lastKey + 1;
         }
     }
 
