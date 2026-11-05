@@ -10,6 +10,7 @@ public class DLS {
 
     private final Random rand;
     private final Graph graph;
+    private final int numOfVertex;
 
     private int numSteps;
     private final int maxSteps;
@@ -20,18 +21,21 @@ public class DLS {
         this.maxSteps = maxSteps;
         this.pd = pd;
 
-        this.penalty = new int[graph.getNumOfVertex()];
+        this.numOfVertex = graph.getNumOfVertex();
+        this.penalty = new int[numOfVertex];
+        this.cliqueDegree = new int[numOfVertex];
 
         this.rand = new Random();
         this.graph = graph;
-        this.improvingNeighbours = new VertexSet(graph.getNumOfVertex());
-        this.levelNeighbours = new VertexSet(graph.getNumOfVertex());
-        this.clique = new VertexSet(graph.getNumOfVertex());
+
+        this.improvingNeighbours = new VertexSet(numOfVertex);
+        this.levelNeighbours = new VertexSet(numOfVertex);
+        this.clique = new VertexSet(numOfVertex);
     }
 
     private VertexSet run(int targetCliqueSize) {
-        VertexSet bestClique = new VertexSet(graph.getNumOfVertex());
-        int firstVertex = rand.nextInt(graph.getNumOfVertex());
+        VertexSet bestClique = new VertexSet(numOfVertex);
+        int firstVertex = rand.nextInt(numOfVertex);
         clique.addVertex(firstVertex);
 
         while (numSteps < maxSteps) {
