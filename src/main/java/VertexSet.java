@@ -1,78 +1,73 @@
 public class VertexSet {
-    private final int numOfVertex;
-    private int currentSize;
+    private int size;
+    private final int capacity;
     private final int[] set;
-    private final int[] key;
+    private final int[] keys;
+    private final int[] timestamps;
+    private int currentTimestamp;
 
-    public VertexSet(int numOfVertex) {
-        this.currentSize = 0;
-        this.numOfVertex = numOfVertex;
-        this.set = new int[numOfVertex];
-        this.key = new int[numOfVertex];
+    public VertexSet(int capacity) {
+        this.size = 0;
+        this.capacity = capacity;
+
+        this.set = new int[capacity];
+        this.keys = new int[capacity];
+
+        this.timestamps = new int[capacity];
+        this.currentTimestamp = 1;
     }
 
     public int getSize() {
-        return currentSize;
+        return size;
     }
 
-    private boolean isValidVertex(int vertex) {
-        return vertex >= 0 && vertex < this.numOfVertex;
+    private void setKey(int vertex, int key) {
+        keys[vertex] = key;
+        timestamps[vertex] = currentTimestamp;
     }
 
-    private boolean isValidKey(int key) {
-        return key >= 0 && key < currentSize;
-    }
-
-    private boolean setKey(int vertexNum, int newKey) {
-        if (isValidVertex(vertexNum)) {
-            key[vertexNum] = newKey;
-            return true;
-        }
-        return false;
-    }
-
-    public int key(int vertexNum) {
-        if (isValidVertex(vertexNum)) {
-            return key[vertexNum];
+    public int key(int vertex) {
+        if (timestamps[vertex] == currentTimestamp) {
+            return keys[vertex];
         }
         return -1;
     }
 
     public int vertex(int key) {
-        if (isValidKey(key)) {
+        if (key < size) {
             return set[key];
         }
         return -1;
     }
 
-    public boolean addVertex(int vertexNum) {
-        if (isValidVertex(vertexNum) && currentSize < numOfVertex && key[vertexNum] == -1) {
-            set[currentSize] = vertexNum;
-            currentSize++;
+    public boolean addVertex(int vertex) {
+        if (size < capacity && key(vertex) == -1) {
+            set[size] = vertex;
+            setKey(vertex, size);
+            size++;
+
             return true;
         }
         return false;
     }
 
-    public int removeVertex(int removedVertex) {
-        if (isValidVertex(removedVertex) && key[removedVertex] != -1) {
-            int removedVertexKey = key(removedVertex);
-            int addedVertex = set[currentSize - 1];
+    public boolean removeVertex(int vertex) {
+        int vertexKey = key(vertex);
+        if (vertexKey != -1) {
+            int lastVertex = vertex(size - 1);
+            set[vertexKey] = lastVertex;
 
-            set[removedVertexKey] = addedVertex;
+            setKey(lastVertex, vertexKey);
+            setKey(vertex, -1);
+            size--;
 
-            setKey(addedVertex, removedVertexKey);
-            setKey(removedVertex, -1);
-
-            currentSize--;
+            return true;
         }
-        return -1;
+        return false;
     }
 
     public void clear() {
-        for (int i = 0; i < numOfVertex; i++) {
-            key[i] = -1;
-        }
-        currentSize = 0;
+        currentTimestamp++;
+        size = 0;
     }
 }
