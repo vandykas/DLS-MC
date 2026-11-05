@@ -1,30 +1,35 @@
 import java.util.ArrayList;
 
 public class Graph {
-    private final int numOfVertex;
+    private final int capacity;
     private final int[][] matrix;
-    private ArrayList<Integer>[] list;
+    private final ArrayList<Integer>[] list;
 
-    public Graph(int numOfVertex) {
-        this.numOfVertex = numOfVertex;
-        matrix = new int[numOfVertex][numOfVertex];
-        list = new ArrayList[numOfVertex];
+    public Graph(int capacity) {
+        this.capacity = capacity;
+        this.matrix = new int[capacity][capacity];
+        this.list = new ArrayList[capacity];
+        for (int i = 0; i < capacity; i++) {
+            this.list[i] = new ArrayList<>(); 
+        }
     }
 
-    public int getNumOfVertex() {
-        return numOfVertex;
+    public int getCapacity() {
+        return capacity;
     }
 
-    public ArrayList<Integer> getAdjList(int u) {
-        return this.list[u];
+    public ArrayList<Integer> getNeighbours(int u) {
+        return list[u];
     }
 
     public void addEdge(int u, int v) {
-        matrix[u][v] = 1;
-        matrix[v][u] = 1;
+        if (!isAdjacent(u, v)) {
+            matrix[u][v] = 1;
+            matrix[v][u] = 1;
 
-        list[u].add(v);
-        list[v].add(u);
+            list[u].add(v);
+            list[v].add(u);
+        }
     }
 
     public boolean isAdjacent(int u, int v) {
