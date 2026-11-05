@@ -1,18 +1,18 @@
 public class VertexSet {
-    private int numOfVertex;
-    private int setSize;
-    private int[] neigboursSet;
-    private int[] neigboursKey;
+    private final int numOfVertex;
+    private int currentSize;
+    private final int[] set;
+    private final int[] key;
 
     public VertexSet(int numOfVertex) {
-        this.setSize = 0;
+        this.currentSize = 0;
         this.numOfVertex = numOfVertex;
-        this.neigboursSet = new int[numOfVertex];
-        this.neigboursKey = new int[numOfVertex];
+        this.set = new int[numOfVertex];
+        this.key = new int[numOfVertex];
     }
 
-    public int getSetSize() {
-        return setSize;
+    public int getSize() {
+        return currentSize;
     }
 
     private boolean isValidVertex(int vertex) {
@@ -20,12 +20,12 @@ public class VertexSet {
     }
 
     private boolean isValidKey(int key) {
-        return key >= 0 && key < setSize;
+        return key >= 0 && key < currentSize;
     }
 
     private boolean setKey(int vertexNum, int newKey) {
         if (isValidVertex(vertexNum)) {
-            neigboursKey[vertexNum] = newKey;
+            key[vertexNum] = newKey;
             return true;
         }
         return false;
@@ -33,43 +33,46 @@ public class VertexSet {
 
     public int key(int vertexNum) {
         if (isValidVertex(vertexNum)) {
-            return neigboursKey[vertexNum];
+            return key[vertexNum];
         }
         return -1;
     }
 
     public int vertex(int key) {
         if (isValidKey(key)) {
-            return neigboursSet[key];
+            return set[key];
         }
         return -1;
     }
 
     public boolean addVertex(int vertexNum) {
-        if (isValidVertex(vertexNum) && setSize < numOfVertex && neigboursKey[vertexNum] == -1) {
-            neigboursSet[setSize] = vertexNum;
-            setSize++;
+        if (isValidVertex(vertexNum) && currentSize < numOfVertex && key[vertexNum] == -1) {
+            set[currentSize] = vertexNum;
+            currentSize++;
             return true;
         }
         return false;
     }
 
     public int removeVertex(int removedVertex) {
-        if (isValidVertex(removedVertex) && neigboursKey[removedVertex] != -1) {
+        if (isValidVertex(removedVertex) && key[removedVertex] != -1) {
             int removedVertexKey = key(removedVertex);
-            int addedVertex = neigboursSet[setSize - 1];
+            int addedVertex = set[currentSize - 1];
 
-            neigboursSet[removedVertexKey] = addedVertex;
+            set[removedVertexKey] = addedVertex;
 
             setKey(addedVertex, removedVertexKey);
             setKey(removedVertex, -1);
 
-            setSize--;
+            currentSize--;
         }
         return -1;
     }
 
     public void clear() {
-        setSize = 0;
+        for (int i = 0; i < numOfVertex; i++) {
+            key[i] = -1;
+        }
+        currentSize = 0;
     }
 }
